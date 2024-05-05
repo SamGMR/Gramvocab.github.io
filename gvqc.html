@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GramVocab Quiz Game</title>
+<style>
+    body {
+         font-family: times new roman;
+        background-image: url('https://cdn.vectorstock.com/i/500p/64/22/classroom-for-mathematics-learning-vector-30246422.jpg'); /* Replace 'background.jpg' with the path to your background image */
+        background-size: cover;
+        background-position: down;
+        background-repeat: no-repeat;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color:rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+    h1 {
+        text-align: center;
+    }
+    .question-box {
+        background-color: #808000;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    .question {
+        margin-bottom: 10px;
+    }
+    .options label {
+        display: block;
+        margin-bottom: 10px;
+    }
+    #result {
+        margin-top: 20px;
+        font-weight: bold;
+    }
+    #timer {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    #resetBtn {
+        display: none;
+        margin-top: 20px;
+    }
+    .time-up {
+        color: red;
+        font-weight: bold;
+    }
+    #startContainer {
+        text-align:center;
+    }
+    #startBtn {
+        font-size: 30px;
+        padding: 50px 100px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    #startBtn:hover {
+        background-color: #45a049;
+		
+	}
+    #welcomeMessage {
+        font-family: 'Times New Roman', Times, serif;
+        font-size:30px;
+        margin-top: 50px;
+		color: black;
+    }
+    #lessonContainer {
+        display: none;
+        margin-top: 20px;
+    }
+    #lessonText {
+        font-size: 18px;
+        line-height: 1.5;
+    }
+    #nextBtn {
+        display: none;
+        margin-top: 20px;
+        font-size: 20px;
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    #nextBtn:hover {
+        background-color: #45a049;
+    }
+    .answer-tab {
+        margin-top: 20px;
+        text-align: center;
+    }
+    .answer-tab button {
+        font-size: 20px;
+        padding: 10px 20px;
+        background-color: #008CBA;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .answer-tab button:hover {
+        background-color: #005f6b;
+    }
+    .answer-container {
+        display: none;
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 20px;
+        background-image: url('data:image/jpeg;base64,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'); /* Add the URL of your background image */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+</style>
+</head>
+<body>
+
+<div class="container" id="startContainer">
+    <p id="welcomeMessage">Hello! Grade 8 learners. Welcome to the GramVocab Quiz Game! Let's test your grammar and vocabulary skills.</p>
+    <button id="startBtn" onclick="showLesson()">Start Quiz</button>
+</div>
+
+<div class="container" id="lessonContainer">
+    <h1>Welcome to the Grammar and Vocabulary Lesson</h1>
+    <div id="lessonText">
+        <p>In this lesson, we will cover some basic concepts of grammar and vocabulary.</p>
+        <p><strong>Grammar:</strong> Grammar is the set of structural rules governing the composition of clauses, phrases, and words in any given natural language.</p>
+        <p><strong>Vocabulary:</strong> Vocabulary refers to the body of words used in a particular language or in a particular field of knowledge.</p>
+        <p><strong>active voice:</strong>the active voice, the subject of the verb does the action (e.g. They killed the President). See also Passive Voice.</p>
+	    <p><strong>passive voice:</strong>The passive voice is used to show interest in the person or object that experiences an action rather than the person or object that performs the action.</p>
+		<p><strong>adjective:</strong>A word like big, red, easy, French etc. An adjective describes a noun or pronoun.</p>
+	    <p><strong>adverb:</strong>A word like slowly, quietly, well, often etc. An adverb modifies a verb.</p>
+	    <p><strong>noun:</strong> A word like table, dog, teacher, America etc. A noun is the name of an object, concept, person or place.</p>
+	    <p><strong>pronoun:</strong> A word like I, me, you, he, him, it etc. A pronoun replaces a noun.</p>
+        <p><strong>verb:</strong>A word like (to) work, (to) love, (to) begin. A verb describes an action or state.</p>
+	    <p><strong>antonyms:</strong> An antonym is a word that means the opposite of another word.</p>
+	    <p><strong>synonyms:</strong> A synonym is a word, morpheme or phrase which has the exact same meaning, or a very similar meaning, to another word.</p>
+	    <p><strong>preposition:</strong>A preposition is a word or group of words used before a noun, pronoun, or noun phrase to show direction, time, place, location, spatial relationships, or to introduce an object.</p>
+		<p>Now, let's test your understanding with a quiz!</p>
+    </div>
+    <button id="nextBtn" onclick="startQuiz()">Proceed to Quiz</button>
+</div>
+
+<div class="container" id="quizContainer" style="display: none;">
+    <h1>GramVocab Quiz Game</h1>
+    <div class="question-box">
+        <p class="question" id="questionText"></p>
+    </div>
+    <div class="options">
+        <label><input type="radio" name="answer" value="a"> A. <span id="optionA"></span></label>
+        <label><input type="radio" name="answer" value="b"> B. <span id="optionB"></span></label>
+        <label><input type="radio" name="answer" value="c"> C. <span id="optionC"></span></label>
+        <label><input type="radio" name="answer" value="d"> D. <span id="optionD"></span></label>
+    </div>
+    <button onclick="checkAnswer()">Submit</button>
+    <button id="resetBtn" onclick="resetQuiz()">Reset</button> <!-- Reset button added -->
+    <div id="result"></div>
+    <div id="timer">Time Left: <span id="time" class="time-up">10</span> seconds</div>
+</div>
+
+<div class="answer-tab">
+    <button onclick="showAnswer()">View Answers</button>
+</div>
+
+<div class="answer-container" id="answerContainer" style="display: none;">
+    <h2>Answer Key</h2>
+    <ul id="answerList"></ul>
+</div>
+
+<script>
+    var questions = [
+        {
+		     question: "what is the plural form of a child",
+             options: {
+                a: "childs",
+                b: "child",
+                c: "children",
+                d: "chiden",
+            },
+            correctAnswer: "c" 
+        },
+        {
+            question: "Which of the following is a synonym for admirable?",
+            options: {
+                a: "admirable",
+                b: "excellent",
+                c: "terrible",
+                d: "uncertain"
+            },
+            correctAnswer: "c"
+        },
+          {
+            question: "ILLOGICAL means lacking in a correct relation of reason.?",
+            options: {
+                a: "True",
+                b: "False",
+                c: "Sometimes true",
+                d: "Maybe",
+            },
+            correctAnswer: "a"
+		},
+        {
+            question: "A girl ______ blue eyes has just gone out.",
+            options: {
+                a: "in",
+                b: "with",
+                c: "of",
+                d: "from",
+            },
+            correctAnswer: "b"
+		},
+        {
+            question: "______ English, one should also know at least one regional language.",
+            options: {
+                a: "beside",
+                b: "except",
+                c: "accept",
+                d: "besides",
+            },
+            correctAnswer: "d"
+	    },
+        {
+            question: "Which one of the word is a conjunction?",
+            options: {
+                a: "dog",
+                b: "house",
+                c: "but",
+                d: "antonym",
+            },
+            correctAnswer: "c"
+			
+	    },
+        {
+            question: "What is the plural form of goose?",
+            options: {
+                a: "goos",
+                b: "geese",
+                c: "gooses",
+                d: "goos",
+            },
+            correctAnswer: "c"
+		},
+        {
+            question: "Which of the following is an adjective?",
+            options: {
+                a: "run",
+                b: "beautiful",
+                c: "talking",
+                d: "eating",
+            },
+            correctAnswer: "b"
+			
+		},
+        {
+            question: "Which word is a preposition? ",
+            options: {
+                a: "slowly",
+                b: "quickly",
+                c: "under",
+                d: "watching",
+            },
+            correctAnswer: "c"
+			
+		},
+        {
+            question: "The cat jumped ______ the table.",
+            options: {
+                a: "to over",
+                b: "above",
+                c: "on",
+                d: "upon",
+            },
+            correctAnswer: "d"
+			
+		},
+        {
+            question: "Choose the past participle of ‘to go’.",
+            options: {
+                a: "gone",
+                b: "went",
+                c: "goes",
+                d: "going",
+            },
+            correctAnswer: "a"
+		
+		},
+        {
+            question: " Synonyms of “Immediately”.",
+            options: {
+                a: "early",
+                b: "at once",
+                c: "hurridly",
+                d: "fast",
+            },
+            correctAnswer: "c"
+			
+		},
+        {
+            question: " Look at ______ birds up there in the tree",
+            options: {
+                a: "these",
+                b: "those",
+                c: "that",
+                d: "this",
+            },
+            correctAnswer: "b"
+			
+		},
+        {
+            question: " Neither martin nor shimon should stop telling personal stories about ________ childhoods.",
+            options: {
+                a: "his",
+                b: "their",
+                c: "they",
+                d: "themm",
+            },
+            correctAnswer: "b"
+			
+		},
+        {
+            question: " john should not have trouble finding information for _______ report.",
+            options: {
+                a: "their",
+                b: "this",
+                c: "his",
+                d: "them",
+            },
+            correctAnswer: "c"
+			
+		},
+        {
+            question: "Everyone knows that when writing research,  __________must gather facts, not opinions.",
+            options: {
+                a: "their",
+                b: "this",
+                c: "they",
+                d: "his or her",
+            },
+            correctAnswer: "c"
+			
+		},
+        {
+            question: "Each of the boys refused help, saying that _________ would proofread the report on ________ own.",
+            options: {
+                a: "he,his",
+                b: "we,our",
+                c: "they,them",
+                d: "his or her",
+            },
+            correctAnswer: "a"
+			
+		},
+        {
+            question: "Either sandy or rhean offered ________ help with proofreading.",
+            options: {
+                a: "them",
+                b: "he",
+                c: "they",
+                d: "her",
+            },
+            correctAnswer: "d"
+			
+		},
+        {
+            question: "the entire structure and system of a languages,dictates how words can be combined to form meaningful expressions, sentences, and texts, providing guidelines for proper communication and understanding.",
+            options: {
+                a: "adjectives",
+                b: "grammar",
+                c: "figure of speech",
+                d: "synonym",
+            },
+            correctAnswer: "b"
+			
+		},
+        {
+            question: "Every morning, Sarah _____________ to school with her friends.",
+            options: {
+                a: "go",
+                b: "goes",
+                c: "going",
+                d: "went",
+            },
+            correctAnswer: "b"
+		}
+    ];
+    
+    var answers = []; // Array to store correct answers
+
+    var currentQuestion = 0;
+    var score = 0;
+    var timer; // Variable to hold the timer
+
+    function showLesson() {
+        document.getElementById("startContainer").style.display = "none";
+        document.getElementById("lessonContainer").style.display = "block";
+        document.getElementById("nextBtn").style.display = "block"; // Show the Next button
+    }
+
+    function startQuiz() {
+        document.getElementById("lessonContainer").style.display = "none"; // Hide the lesson container
+        document.getElementById("quizContainer").style.display = "block"; // Show the quiz container
+        displayQuestion(); // Display the first question
+    }
+
+    function displayQuestion() {
+        clearInterval(timer); // Clear existing timer
+        startTimer(); // Start new timer
+        var q = questions[currentQuestion];
+        document.getElementById("questionText").textContent = q.question;
+        document.getElementById("optionA").textContent = q.options.a;
+        document.getElementById("optionB").textContent = q.options.b;
+        document.getElementById("optionC").textContent = q.options.c;
+        document.getElementById("optionD").textContent = q.options.d;
+    }
+
+    function checkAnswer() {
+        var selectedOption = document.querySelector('input[name="answer"]:checked');
+        if (!selectedOption) {
+            alert("Please select an answer!");
+            return;
+        }
+        var answer = selectedOption.value;
+        if (answer === questions[currentQuestion].correctAnswer) {
+            score++;
+            document.getElementById("quizContainer").style.backgroundColor = "rgba(0, 255, 0, 0.2)"; // Light green for correct answer
+        } else {
+            document.getElementById("quizContainer").style.backgroundColor = "rgba(255, 0, 0, 0.2)"; // Light red for wrong answer
+        }
+        answers.push(questions[currentQuestion].correctAnswer); // Record the correct answer
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            displayQuestion();
+        } else {
+            displayResult();
+        }
+    }
+
+    function displayResult() {
+        clearInterval(timer); // Clear the timer when quiz ends
+        var resultElement = document.getElementById("result");
+        resultElement.textContent = "Your score: " + score + " out of " + questions.length;
+        var percentage = (score / questions.length) * 100;
+        resultElement.textContent += " (" + percentage.toFixed(2) + "%)";
+        document.getElementById("resetBtn").style.display = "block";
+
+        // Add a message if the score is lower than 10 points
+        if (score < 10) {
+            resultElement.textContent += "\nDo better next time!";
+        }
+    }
+
+    function resetQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        displayQuestion();
+        document.getElementById("result").textContent = "";
+        document.getElementById("resetBtn").style.display = "none";
+        document.getElementById("quizContainer").style.backgroundColor = "rgba(255, 255, 255, 0.8)"; // Reset container color
+        answers = []; // Clear the answers array
+    }
+
+    function startQuiz() {
+        document.getElementById("startContainer").style.display = "none";
+        document.getElementById("quizContainer").style.display = "block";
+        document.getElementById("welcomeMessage").style.display = "none"; // Hide the welcome message
+        displayQuestion();
+    }
+
+    function startTimer() {
+        var timeLeft = 10;
+        timer = setInterval(function() {
+            var timeElement = document.getElementById("time");
+            timeElement.textContent = timeLeft;
+            timeElement.classList.remove("time-up");
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                timeElement.textContent = "Time's Up!";
+                timeElement.classList.add("time-up");
+                checkAnswer(); // Auto-submit when time is up
+            }
+            timeLeft--;
+        }, 1000);
+    }
+
+    function showAnswer() {
+        var answerList = document.getElementById("answerList");
+        answerList.innerHTML = ""; // Clear previous answers
+        answers.forEach(function(item, index) {
+            var li = document.createElement("li");
+            li.textContent = "Question " + (index + 1) + ": " + item.toUpperCase();
+            answerList.appendChild(li);
+        });
+        document.getElementById("answerContainer").style.display = "block"; // Show answer container
+    }
+	function resetQuiz() {
+        // Clear the result
+        document.getElementById('result').innerHTML = "";
+        // Hide the reset button
+        document.getElementById('resetBtn').style.display = "none";
+        // Show the quiz content
+        document.getElementById('quizContainer').style.display = "block";
+    }
+
+    // Display the first question when the page loads
+    // displayQuestion();
+</script>
+
+</body>
+</html>
